@@ -1,5 +1,5 @@
 {
-  "name": "harugon/ChartJs",
+  "name": "harugon/chartjs",
   "type": "mediawiki-extension",
   "description": "Chart.js for Semantic MediaWiki",
   "keywords": [
@@ -16,8 +16,8 @@
   },
   "autoload": {
 	"psr-4": {
-	  "VisTimeline\\": "includes/",
-	  "VisTimeline\\Tests\\": "tests/"
+	  "chartjs\\": "includes/",
+	  "chartjs\\Tests\\": "tests/"
 	}
   }
 }
