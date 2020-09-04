@@ -1,0 +1,9 @@
+.chart_js_container {
+	min-width:300px;
+}
+
+.chart_js_wrap {
+	max-width:1000px ;
+	width: 100%;
+	overflow: auto;
+}
