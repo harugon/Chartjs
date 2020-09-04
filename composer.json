@@ -1,0 +1,23 @@
+{
+  "name": "harugon/ChartJs",
+  "type": "mediawiki-extension",
+  "description": "Chart.js for Semantic MediaWiki",
+  "keywords": [
+	"MediaWiki",
+	"Semantic MediaWiki"
+  ],
+  "license": "MIT",
+  "authors": [
+  ],
+  "require": {
+	"php": ">=7.1",
+	"composer/installers": "^1.0.1",
+	"param-processor/param-processor": "~1.10"
+  },
+  "autoload": {
+	"psr-4": {
+	  "VisTimeline\\": "includes/",
+	  "VisTimeline\\Tests\\": "tests/"
+	}
+  }
+}
