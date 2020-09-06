@@ -8,7 +8,7 @@
   "chart-js-desc": "Chart.js for Semantic MediaWiki",
   "chart-js-op-width": "Width",
   "chart-js-op-type": "ChartType　📈 📊",
-  "chart-js-op-group": "Group,
+  "chart-js-op-group": "Group",
   "chart-js-op-stacked": "Stacked",
   "chart-js-op-position": "label position",
   "chart-js-op-theme":"color theme　[https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html]",
