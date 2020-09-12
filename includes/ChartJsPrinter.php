@@ -115,8 +115,8 @@ class ChartJsPrinter implements ResultPrinter {
 		 * @var $labels array プロパティ名all
 		 */
 		$subjects = $this->getSubjects( $result->getResults() );
-		$raw_labels = $this->getLabels( $result->getPrintRequests() );
-		$labels = array_column( $raw_labels, "label" );
+		$labels = $this->getLabels( $result->getPrintRequests() );
+		//$labels = array_column( $raw_labels, "label" );
 
 		$group = $parameters['group']->getValue();
 		$row_propertyLabel = [];
@@ -136,6 +136,7 @@ class ChartJsPrinter implements ResultPrinter {
 				 * @var $propertyLabel string プロパティ
 				 */
 				$propertyLabel = $SMWResultArray->getPrintRequest()->getLabel();
+				$propertyKey = $SMWResultArray->getPrintRequest()->getCanonicalLabel();
 				// Get the label for the current subject
 				// getTitle()->getText() will return only the main text without the
 				// fragment(#) which can be arbitrary in case subobjects are involved
@@ -147,7 +148,6 @@ class ChartJsPrinter implements ResultPrinter {
 				 * @var $subjectLabel  string ページ
 				 */
 				$subjectLabel = $SMWResultArray->getResultSubject()->getTitle()->getFullText();
-
 				/**
 				 * @var SMWDataValue|false $dataValue
 				 */
@@ -166,56 +166,58 @@ class ChartJsPrinter implements ResultPrinter {
 					 */
 					if ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_NUMBER ) {
 						$number = $dataValue->getNumber();
-						$row[$subjectLabel][$propertyLabel] = $number;
+						$row[$subjectLabel][$propertyKey] = $number;
 					} else {
-						$row_propertyLabel[$subjectLabel][$propertyLabel] = $dataValue->getWikiValue();
+						$row_propertyLabel[$subjectLabel][$propertyKey] = $dataValue->getWikiValue();
 					}
 				}
 			}
 		}
 
 		// ラベル　データ
+		$chart_labels = [];
 		if ( $group == 'property' ) {
 			// 横軸 プロパティ名
-			$chart_labels = [];
-			foreach ( $raw_labels as $value1 ) {
-				if ( $value1['type'] == '_num' ) { $chart_labels[] = $value1['label'];
+
+			foreach ( $labels as  $Canonical => $Label ) {
+				if ( $Label['type'] == '_num' ) { $chart_labels[] = $Label['label'];
 				}
 			}
-			foreach ( $subjects as $value ) {
-				foreach ( $raw_labels as $value2 ) {
-					if ( $value2['type'] == '_num' ) { $chart_data[$value][] = $row[$value][$value2['label']] ?? '';
+			foreach ( $subjects as  $FullText => $Text ) {
+				foreach ( $labels as  $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' ) {
+						$chart_data[$FullText][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
 			}
 		} elseif ( !empty( $row_propertyLabel ) ) {
 			// 横軸 指定プロパティの値
-			$label_name = '';
-			foreach ( $raw_labels as $value1 ) {
-				if ( !( $value1['type'] == '_num' ) ) {
-					$label_name = $value1['label'];
+			$label_key = '';
+
+			foreach ( $labels as  $Canonical => $Label ) {
+				if ( !( $Label['type'] == '_num' ) ) {
+					$label_key = $Canonical;
 					break;
 				}
 			}
 
-			$chart_labels = [];
-			foreach ( $subjects as $value ) {
-				$label = $row_propertyLabel[$value][$label_name] ?? '';
-				$chart_labels[] = $label;
+			foreach ( $subjects as  $FullText => $Text ) {
+				$chart_labels[] = $row_propertyLabel[$FullText][$label_key] ?? '';
 
-				foreach ( $raw_labels as $value2 ) {
-					if ( $value2['type'] == '_num' ) {
-						$chart_data[$value2['label']][] = $row[$value][$value2['label']] ?? '';
+				foreach ( $labels as  $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' ) {
+						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
 			}
 		} else {
 			// 横軸 ページ名 $group=='subject'
-			$chart_labels = $subjects;
-			foreach ( $subjects as $value ) {
-				foreach ( $raw_labels as $value2 ) {
-					if ( $value2['type'] == '_num' ) {
-						$chart_data[$value2['label']][] = $row[$value][$value2['label']] ?? '';
+			$chart_labels = array_values($subjects);
+			\MWDebug::log($chart_labels);
+			foreach ( $subjects as  $FullText => $Text ) {
+				foreach ( $labels as  $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' ) {
+						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
 			}
@@ -228,8 +230,14 @@ class ChartJsPrinter implements ResultPrinter {
 		// Data Set
 		$chart_datasets = [];
 		foreach ( $chart_data as  $key => $value ) {
+			if($group=="property"){
+				$dataset_label = $subjects[$key];
+			}else{
+				$dataset_label = $labels[$key]['label'];
+			}
+
 			$chart_datasets[] = [
-				'label' => $this->characterLimit( $key ),
+				'label' => $this->characterLimit($dataset_label),
 				'data' => $value
 			];
 		}
@@ -356,7 +364,7 @@ class ChartJsPrinter implements ResultPrinter {
 		 * @var $wikiDIPage \SMWDIWikiPage
 		 */
 		foreach ( $result as $wikiDIPage ) {
-			$subjects[] = $wikiDIPage->getTitle()->getText();
+			$subjects[$wikiDIPage->getTitle()->getFullText()] = $wikiDIPage->getTitle()->getText();
 		}
 		return $subjects;
 	}
@@ -375,7 +383,7 @@ class ChartJsPrinter implements ResultPrinter {
 		foreach ( $result as $printRequests ) {
 			if ( strlen( $printRequests->getLabel() ) ) {
 				// $printRequestsLabels[]=$printRequests->getLabel();
-				$printRequestsLabels[] = [
+				$printRequestsLabels[$printRequests->getCanonicalLabel()] = [
 					'label' => $printRequests->getLabel(),
 					'type' => $printRequests->getTypeID()
 				];
