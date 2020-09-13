@@ -116,7 +116,7 @@ class ChartJsPrinter implements ResultPrinter {
 		 */
 		$subjects = $this->getSubjects( $result->getResults() );
 		$labels = $this->getLabels( $result->getPrintRequests() );
-		//$labels = array_column( $raw_labels, "label" );
+		// $labels = array_column( $raw_labels, "label" );
 
 		$group = $parameters['group']->getValue();
 		$row_propertyLabel = [];
@@ -183,6 +183,7 @@ class ChartJsPrinter implements ResultPrinter {
 				if ( $Label['type'] == '_num' ) { $chart_labels[] = $Label['label'];
 				}
 			}
+
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
 					if ( $Label['type'] == '_num' ) {
@@ -212,8 +213,8 @@ class ChartJsPrinter implements ResultPrinter {
 			}
 		} else {
 			// 横軸 ページ名 $group=='subject'
-			$chart_labels = array_values($subjects);
-			\MWDebug::log($chart_labels);
+			$chart_labels = array_values( $subjects );
+			\MWDebug::log( $chart_labels );
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
 					if ( $Label['type'] == '_num' ) {
@@ -230,14 +231,14 @@ class ChartJsPrinter implements ResultPrinter {
 		// Data Set
 		$chart_datasets = [];
 		foreach ( $chart_data as  $key => $value ) {
-			if($group=="property"){
+			if ( $group == "property" ) {
 				$dataset_label = $subjects[$key];
-			}else{
+			} else {
 				$dataset_label = $labels[$key]['label'];
 			}
 
 			$chart_datasets[] = [
-				'label' => $this->characterLimit($dataset_label),
+				'label' => $this->characterLimit( $dataset_label ),
 				'data' => $value
 			];
 		}
@@ -404,29 +405,57 @@ class ChartJsPrinter implements ResultPrinter {
 		return $dataValue->getWikiValue();
 	}
 
+	/**
+	 * query mode
+	 * @param \SMW\Query\QueryContext $context
+	 *
+	 * @return int
+	 */
 	public function getQueryMode( $context ): int {
 		return SMWQuery::MODE_INSTANCES;
 	}
 
+	/**
+	 * Set whether errors should be shown. By default they are.
+	 *
+	 * @param bool $show
+	 */
 	public function setShowErrors( $show ) {
 	}
 
+	/**
+	 * Returns if the format is an export format.
+	 *
+	 * @return bool
+	 */
 	public function isExportFormat(): bool {
 		return false;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDefaultSort(): string {
 		return 'ASC';
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isDeferrable(): bool {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function supportsRecursiveAnnotation(): bool {
 		return false;
 	}
 
+	/**
+	 * @param RecursiveTextProcessor $recursiveTextProcessor
+	 */
 	public function setRecursiveTextProcessor( RecursiveTextProcessor $recursiveTextProcessor ) {
 	}
 
