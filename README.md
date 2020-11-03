@@ -23,6 +23,16 @@ LocalSettings.php に下記を追記
 ```php
 wfLoadExtension( 'Chartjs' );
 ```
+
+extensions/Chartjs　ディレクトリに移動し
+```bash
+composer install --no-dev
+```
+
+[wikimedia/composer\-merge\-plugin](https://github.com/wikimedia/composer-merge-plugin)で追記する方法もあり
+
+
+
 ## Library
 * [Chart\.js \| Open source HTML5 Charts for your website](https://www.chartjs.org/)
 * [chartjs\-plugin\-colorschemes Color Chart](https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html)
