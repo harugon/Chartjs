@@ -20,7 +20,7 @@ jobs:
         working-directory: ./Chartjs
 
       - name: tar.gz
-        run: tar -zcvf Chartjs-${{steps.extract_branch.outputs.tag}}.tar.gz Gtm
+        run: tar -zcvf Chartjs-${{steps.extract_branch.outputs.tag}}.tar.gz Chartjs
 
       - name: Upload Release
         id: upload-release-asset
