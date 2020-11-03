@@ -1,6 +1,6 @@
 Chartjs
 ====
- ![demo](https://repository-images.githubusercontent.com/292959862/ab637480-ef52-11ea-87c4-f87d79403d4e)
+ ![demo](https://raw.githubusercontent.com/harugon/Chartjs/master/.github/screenshots/Chartjs.png)
  
 📈Chart.js for Semantic MediaWiki
 
