@@ -8,6 +8,11 @@
   ],
   "license": "MIT",
   "authors": [
+	  {
+		  "name": "harugon",
+		  "email": "info@harugon.com",
+		  "role": "Developer"
+	  }
   ],
   "require": {
 	"php": ">=7.1",

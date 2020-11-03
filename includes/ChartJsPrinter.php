@@ -45,15 +45,19 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @see ResultPrinter::getParamDefinitions
 	 */
 	public function getParamDefinitions( array $definitions ) {
-		/** 　幅
-		 * '100%'
-		 */
+
 		$definitions['width'] = [
 			'type' => ParameterTypes::DIMENSION,
 			'message' => 'chart-js-op-width',
 			'units' => [ 'px', 'ex', 'em', '%', '' ],
 			'default' => '700px',
 		];
+
+        $definitions['charttitle'] = [
+            'type' => ParameterTypes::STRING,
+            'message' => 'chart-js-op-charttitle',
+            'default' => "",
+        ];
 
 		$definitions['character_limit'] = [
 			'type' => ParameterTypes::INTEGER,
@@ -77,7 +81,7 @@ class ChartJsPrinter implements ResultPrinter {
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-type',
 			'default' => 'line',
-			'values' => [ 'line','bar','horizontalBar','doughnut','pie','radar' ],
+			'values' => [ 'line','bar','horizontalBar','doughnut','pie','radar','polarArea' ],
 		];
 
 		$definitions['group'] = [
@@ -93,6 +97,12 @@ class ChartJsPrinter implements ResultPrinter {
 			'default' => 'bottom',
 			'values' => [ 'top', 'left', 'bottom', 'right' ],
 		];
+
+        $definitions['reverse'] = [
+            'type' => ParameterTypes::BOOLEAN,
+            'message' => 'chart-js-op-reverse',
+            'default' => false
+        ];
 
 		return $definitions;
 	}
@@ -165,6 +175,7 @@ class ChartJsPrinter implements ResultPrinter {
 					 * @var SMWRecordValue $dataValue
 					 */
 					if ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_NUMBER ) {
+					    //todo unit対応
 						$number = $dataValue->getNumber();
 						$row[$subjectLabel][$propertyKey] = $number;
 					} else {
@@ -214,7 +225,7 @@ class ChartJsPrinter implements ResultPrinter {
 		} else {
 			// 横軸 ページ名 $group=='subject'
 			$chart_labels = array_values( $subjects );
-			\MWDebug::log( $chart_labels );
+
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
 					if ( $Label['type'] == '_num' ) {
@@ -228,8 +239,9 @@ class ChartJsPrinter implements ResultPrinter {
 		$chart_labels = array_map( function ( $text ){ return $this->characterLimit( $text );
 		}, $chart_labels );
 
-		// Data Set
+		//datasets
 		$chart_datasets = [];
+
 		foreach ( $chart_data as  $key => $value ) {
 			if ( $group == "property" ) {
 				$dataset_label = $subjects[$key];
@@ -245,14 +257,15 @@ class ChartJsPrinter implements ResultPrinter {
 
 		// オプション
 		$chart_options_scales = [];
-		if ( in_array( $parameters['type']->getValue(), [ 'line','bar','horizontalBar' ], true ) ) {
+		if ( in_array( $parameters['type']->getValue(), [ 'line','bar','horizontalBar' ,'polarArea'], true ) ) {
 			$chart_options_scales = [
 				// pie redr 消す
 				"xAxes" => [ [
-					"stacked" => ( $parameters['stacked']->getValue() )
+					"stacked" => ( $parameters['stacked']->getValue() ),
 				] ],
 				"yAxes" => [ [
 					"ticks" => [
+                        "reverse"=>$parameters['reverse']->getValue(),
 						"beginAtZero" => true
 					],
 					"stacked" => ( $parameters['stacked']->getValue() )
@@ -267,6 +280,10 @@ class ChartJsPrinter implements ResultPrinter {
 				"datasets" => $chart_datasets,
 			],
 			"options" => [
+			    "title"=>[
+                    "display" =>($parameters['charttitle']->getValue()?true:false),
+                    "text" =>$parameters['charttitle']->getValue()
+                ],
 				"scales" => $chart_options_scales,
 				"legend" => [
 					"position" => $parameters['position']->getValue(),

@@ -11,6 +11,8 @@
   "chart-js-op-group": "Group",
   "chart-js-op-stacked": "Stacked",
   "chart-js-op-position": "label position",
+  "chart-js-op-reverse": "reverse",
+  "chart-js-op-charttitle": "title",
   "chart-js-op-theme":"color theme　[https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html]",
   "chart-js-op-character_limit": "label character limit",
   "chart-js-format-name": "Chart.js"

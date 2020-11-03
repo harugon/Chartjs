@@ -11,6 +11,8 @@
   "chart-js-op-group": "グループ",
   "chart-js-op-stacked": "積む",
   "chart-js-op-position": "position",
+  "chart-js-op-reverse": "y軸　反転",
+  "chart-js-op-charttitle": "タイトル",
   "chart-js-op-theme":"テーマ　[https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html]",
   "chart-js-op-character_limit": "ラベルの文字数制限",
   "chart-js-format-name": "Chart.js"

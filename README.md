@@ -1,10 +1,40 @@
-
-# 📈Chart.js for Semantic MediaWiki
+Chartjs
+====
  ![demo](https://repository-images.githubusercontent.com/292959862/ab637480-ef52-11ea-87c4-f87d79403d4e)
+ 
+📈Chart.js for Semantic MediaWiki
 
-Semantic MediaWikiでChart.jsを使用することができます
 
+## Description
+Semantic MediaWiki 意味的検索 でChart.jsを使用することができます
+
+## Download
+
+### Composer
+Composer でインストールします [composer.local.json](https://www.mediawiki.org/wiki/Composer#Using_composer-merge-plugin)
+```bash
+COMPOSER=composer.local.json composer require harugon/Chartjs
+```
+
+## Install
+
+
+LocalSettings.php に下記を追記
+```php
+wfLoadExtension( 'Chartjs' );
+```
+## Library
 * [Chart\.js \| Open source HTML5 Charts for your website](https://www.chartjs.org/)
 * [chartjs\-plugin\-colorschemes Color Chart](https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html)
 
 
+
+## Licence
+
+MIT
+
+## Author
+
+[harugon](https://github.com/harugon)
+
+# 
