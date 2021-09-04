@@ -77,6 +77,7 @@ class ChartJsPrinter implements ResultPrinter {
 			'default' => "tableau.ClassicColorBlind10"
 		];
 
+		//Chart Type
 		$definitions['type'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-type',
@@ -84,6 +85,7 @@ class ChartJsPrinter implements ResultPrinter {
 			'values' => [ 'line','bar','horizontalBar','doughnut','pie','radar','polarArea' ],
 		];
 
+		//グルーピング
 		$definitions['group'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-group',
@@ -91,6 +93,7 @@ class ChartJsPrinter implements ResultPrinter {
 			'values' => [ 'none','property', 'subject' ],
 		];
 
+		//凡例の位置
 		$definitions['position'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-position',
@@ -168,12 +171,6 @@ class ChartJsPrinter implements ResultPrinter {
 						break;
 					}
 
-					/**
-					 * Semantic MediaWiki and related extensions: SMWRecordValue
-					 * https://doc.semantic-mediawiki.org/classSMWRecordValue.html
-					 *
-					 * @var SMWRecordValue $dataValue
-					 */
 					if ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_NUMBER ) {
 					    //todo unit対応
 						$number = $dataValue->getNumber();
@@ -191,13 +188,13 @@ class ChartJsPrinter implements ResultPrinter {
 			// 横軸 プロパティ名
 
 			foreach ( $labels as  $Canonical => $Label ) {
-				if ( $Label['type'] == '_num' ) { $chart_labels[] = $Label['label'];
+				if ( $Label['type'] == '_num'||'_qty' ) { $chart_labels[] = $Label['label'];
 				}
 			}
 
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num' ) {
+					if ( $Label['type'] == '_num'||'_qty' ) {
 						$chart_data[$FullText][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -207,7 +204,7 @@ class ChartJsPrinter implements ResultPrinter {
 			$label_key = '';
 
 			foreach ( $labels as  $Canonical => $Label ) {
-				if ( !( $Label['type'] == '_num' ) ) {
+				if ( !( $Label['type'] == '_num'||'_qty' ) ) {
 					$label_key = $Canonical;
 					break;
 				}
@@ -217,7 +214,7 @@ class ChartJsPrinter implements ResultPrinter {
 				$chart_labels[] = $row_propertyLabel[$FullText][$label_key] ?? '';
 
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num' ) {
+					if ( $Label['type'] == '_num'||'_qty' ) {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -228,7 +225,7 @@ class ChartJsPrinter implements ResultPrinter {
 
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num' ) {
+					if ( $Label['type'] == '_num'||'_qty' ) {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -378,7 +375,6 @@ class ChartJsPrinter implements ResultPrinter {
 		$subjects = [];
 
 		/**
-		 * @var
 		 * @var $wikiDIPage \SMWDIWikiPage
 		 */
 		foreach ( $result as $wikiDIPage ) {
@@ -410,17 +406,6 @@ class ChartJsPrinter implements ResultPrinter {
 		return $printRequestsLabels;
 	}
 
-	/**
-	 * Get a single data value item
-	 * @param int $type SMWDataItem
-	 * @param SMWDataValue $dataValue
-	 *
-	 * @return mixed
-	 */
-	private function getDataValueItem( $type, SMWDataValue $dataValue ):string {
-		// For all other data types return the wikivalue
-		return $dataValue->getWikiValue();
-	}
 
 	/**
 	 * query mode
