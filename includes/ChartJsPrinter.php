@@ -188,13 +188,13 @@ class ChartJsPrinter implements ResultPrinter {
 			// 横軸 プロパティ名
 
 			foreach ( $labels as  $Canonical => $Label ) {
-				if ( $Label['type'] == '_num'||'_qty' ) { $chart_labels[] = $Label['label'];
+				if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) { $chart_labels[] = $Label['label'];
 				}
 			}
 
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'||'_qty' ) {
+					if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) {
 						$chart_data[$FullText][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -204,7 +204,7 @@ class ChartJsPrinter implements ResultPrinter {
 			$label_key = '';
 
 			foreach ( $labels as  $Canonical => $Label ) {
-				if ( !( $Label['type'] == '_num'||'_qty' ) ) {
+				if ( !( $Label['type'] == '_num'||$Label['type'] == '_qty' ) ) {
 					$label_key = $Canonical;
 					break;
 				}
@@ -214,7 +214,7 @@ class ChartJsPrinter implements ResultPrinter {
 				$chart_labels[] = $row_propertyLabel[$FullText][$label_key] ?? '';
 
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'||'_qty' ) {
+					if ( $Label['type'] == '_num'|| $Label['type'] == '_qty') {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -225,7 +225,7 @@ class ChartJsPrinter implements ResultPrinter {
 
 			foreach ( $subjects as  $FullText => $Text ) {
 				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'||'_qty' ) {
+					if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
