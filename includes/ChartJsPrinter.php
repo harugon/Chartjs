@@ -13,7 +13,6 @@ use SMWDataItem;
 use SMWDataValue;
 use SMWOutputs;
 use SMWQuery;
-use SMWRecordValue;
 use SMWResultArray;
 
 class ChartJsPrinter implements ResultPrinter {
@@ -327,8 +326,6 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @return string
 	 */
 	private function createHtml(): string {
-		// ローディング
-		$processing = \SRFUtils::htmlProcessingElement();
 		return Html::rawelement(
 			'div',
 			[
