@@ -1,6 +1,6 @@
 {
 	"name": "ChartJs",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"author": [
 		"harugon"
 	],
@@ -10,9 +10,9 @@
 	"license-name": "MIT",
 	"type": "semantic",
 	"requires": {
-		"MediaWiki": ">= 1.31.0",
+		"MediaWiki": ">= 1.39.0",
 		"extensions": {
-			"SemanticMediaWiki": ">= 3.0.0"
+			"SemanticMediaWiki": ">= 4.0.0"
 		}
 	},
 
@@ -26,18 +26,15 @@
 		"ext.chart_js": {
 			"scripts": [
 			  "resources/Chart.js",
-			  "resources/vendor/Chart.min.js",
-			  "resources/vendor/chartjs-plugin-colorschemes.min.js"
+			  "resources/vendor/Chart.min.js"
 			],
 			"styles": [
-			  "resources/Chart.css",
-			  "resources/vendor/Chart.min.css"
+			  "resources/Chart.css"
 			],
 		  "dependencies": [
 			"moment"
 		  ],
-			"targets": [ "desktop", "mobile" ],
-			"position": "bottom"
+			"targets": [ "desktop", "mobile" ]
 		}
 	},
 
@@ -46,9 +43,8 @@
 		"remoteExtPath": "ChartJs"
 	},
 
-	"AutoloadClasses": {
-		"ChartJs\\ChartJsSetup": "includes/ChartJsSetup.php",
-		"ChartJs\\ChartJsPrinter": "includes/ChartJsPrinter.php"
+	"AutoloadNamespaces": {
+		"ChartJs\\": "includes/"
 	},
 
 	"ExtensionFunctions": [

@@ -52,11 +52,11 @@ class ChartJsPrinter implements ResultPrinter {
 			'default' => '700px',
 		];
 
-        $definitions['charttitle'] = [
-            'type' => ParameterTypes::STRING,
-            'message' => 'chart-js-op-charttitle',
-            'default' => "",
-        ];
+		$definitions['charttitle'] = [
+			'type' => ParameterTypes::STRING,
+			'message' => 'chart-js-op-charttitle',
+			'default' => "",
+		];
 
 		$definitions['character_limit'] = [
 			'type' => ParameterTypes::INTEGER,
@@ -70,29 +70,24 @@ class ChartJsPrinter implements ResultPrinter {
 			'default' => false
 		];
 
-		$definitions['theme'] = [
-			'type' => ParameterTypes::STRING,
-			'message' => 'chart-js-op-theme',
-			'default' => "tableau.ClassicColorBlind10"
-		];
-
-		//Chart Type
+		// Chart Type
+		// horizontalBar は Chart.js v4 で削除。bar + indexAxis:'y' で代替
 		$definitions['type'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-type',
 			'default' => 'line',
-			'values' => [ 'line','bar','horizontalBar','doughnut','pie','radar','polarArea' ],
+			'values' => [ 'line', 'bar', 'horizontalBar', 'doughnut', 'pie', 'radar', 'polarArea' ],
 		];
 
-		//グルーピング
+		// グルーピング
 		$definitions['group'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-group',
 			'default' => 'none',
-			'values' => [ 'none','property', 'subject' ],
+			'values' => [ 'none', 'property', 'subject' ],
 		];
 
-		//凡例の位置
+		// 凡例の位置
 		$definitions['position'] = [
 			'type' => ParameterTypes::STRING,
 			'message' => 'chart-js-op-position',
@@ -100,11 +95,11 @@ class ChartJsPrinter implements ResultPrinter {
 			'values' => [ 'top', 'left', 'bottom', 'right' ],
 		];
 
-        $definitions['reverse'] = [
-            'type' => ParameterTypes::BOOLEAN,
-            'message' => 'chart-js-op-reverse',
-            'default' => false
-        ];
+		$definitions['reverse'] = [
+			'type' => ParameterTypes::BOOLEAN,
+			'message' => 'chart-js-op-reverse',
+			'default' => false
+		];
 
 		return $definitions;
 	}
@@ -128,7 +123,6 @@ class ChartJsPrinter implements ResultPrinter {
 		 */
 		$subjects = $this->getSubjects( $result->getResults() );
 		$labels = $this->getLabels( $result->getPrintRequests() );
-		// $labels = array_column( $raw_labels, "label" );
 
 		$group = $parameters['group']->getValue();
 		$row_propertyLabel = [];
@@ -149,12 +143,6 @@ class ChartJsPrinter implements ResultPrinter {
 				 */
 				$propertyLabel = $SMWResultArray->getPrintRequest()->getLabel();
 				$propertyKey = $SMWResultArray->getPrintRequest()->getCanonicalLabel();
-				// Get the label for the current subject
-				// getTitle()->getText() will return only the main text without the
-				// fragment(#) which can be arbitrary in case subobjects are involved
-
-				// getTitle()->getFullText() will return the text with the fragment(#)
-				// which is important when using subobjects
 
 				/** 　紐付いてるページ
 				 * @var $subjectLabel  string ページ
@@ -171,7 +159,7 @@ class ChartJsPrinter implements ResultPrinter {
 					}
 
 					if ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_NUMBER ) {
-					    //todo unit対応
+						//todo unit対応
 						$number = $dataValue->getNumber();
 						$row[$subjectLabel][$propertyKey] = $number;
 					} else {
@@ -186,14 +174,15 @@ class ChartJsPrinter implements ResultPrinter {
 		if ( $group == 'property' ) {
 			// 横軸 プロパティ名
 
-			foreach ( $labels as  $Canonical => $Label ) {
-				if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) { $chart_labels[] = $Label['label'];
+			foreach ( $labels as $Canonical => $Label ) {
+				if ( $Label['type'] == '_num' || $Label['type'] == '_qty' ) {
+					$chart_labels[] = $Label['label'];
 				}
 			}
 
-			foreach ( $subjects as  $FullText => $Text ) {
-				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) {
+			foreach ( $subjects as $FullText => $Text ) {
+				foreach ( $labels as $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' || $Label['type'] == '_qty' ) {
 						$chart_data[$FullText][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -202,18 +191,18 @@ class ChartJsPrinter implements ResultPrinter {
 			// 横軸 指定プロパティの値
 			$label_key = '';
 
-			foreach ( $labels as  $Canonical => $Label ) {
-				if ( !( $Label['type'] == '_num'||$Label['type'] == '_qty' ) ) {
+			foreach ( $labels as $Canonical => $Label ) {
+				if ( !( $Label['type'] == '_num' || $Label['type'] == '_qty' ) ) {
 					$label_key = $Canonical;
 					break;
 				}
 			}
 
-			foreach ( $subjects as  $FullText => $Text ) {
+			foreach ( $subjects as $FullText => $Text ) {
 				$chart_labels[] = $row_propertyLabel[$FullText][$label_key] ?? '';
 
-				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'|| $Label['type'] == '_qty') {
+				foreach ( $labels as $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' || $Label['type'] == '_qty' ) {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -222,9 +211,9 @@ class ChartJsPrinter implements ResultPrinter {
 			// 横軸 ページ名 $group=='subject'
 			$chart_labels = array_values( $subjects );
 
-			foreach ( $subjects as  $FullText => $Text ) {
-				foreach ( $labels as  $Canonical => $Label ) {
-					if ( $Label['type'] == '_num'||$Label['type'] =='_qty' ) {
+			foreach ( $subjects as $FullText => $Text ) {
+				foreach ( $labels as $Canonical => $Label ) {
+					if ( $Label['type'] == '_num' || $Label['type'] == '_qty' ) {
 						$chart_data[$Canonical][] = $row[$FullText][$Canonical] ?? '';
 					}
 				}
@@ -232,13 +221,14 @@ class ChartJsPrinter implements ResultPrinter {
 		}
 
 		// ラベル長さ制限
-		$chart_labels = array_map( function ( $text ){ return $this->characterLimit( $text );
+		$chart_labels = array_map( function ( $text ) {
+			return $this->characterLimit( $text );
 		}, $chart_labels );
 
 		//datasets
 		$chart_datasets = [];
 
-		foreach ( $chart_data as  $key => $value ) {
+		foreach ( $chart_data as $key => $value ) {
 			if ( $group == "property" ) {
 				$dataset_label = $subjects[$key];
 			} else {
@@ -251,46 +241,67 @@ class ChartJsPrinter implements ResultPrinter {
 			];
 		}
 
-		// オプション
+		// Chart.js v4 用オプション構築
+		$chartType = $parameters['type']->getValue();
+		$isHorizontalBar = ( $chartType === 'horizontalBar' );
+		// v4 では horizontalBar が廃止。bar + indexAxis:'y' で代替
+		if ( $isHorizontalBar ) {
+			$chartType = 'bar';
+		}
+
+		$stacked = $parameters['stacked']->getValue();
+		$reverse = $parameters['reverse']->getValue();
+
+		// Chart.js v4 スケール設定
+		// v2: scales.xAxes[]/yAxes[] → v4: scales.x{}/y{}
 		$chart_options_scales = [];
-		if ( in_array( $parameters['type']->getValue(), [ 'line','bar','horizontalBar' ,'polarArea'], true ) ) {
+		if ( in_array( $parameters['type']->getValue(), [ 'line', 'bar', 'horizontalBar', 'polarArea' ], true ) ) {
 			$chart_options_scales = [
-				// pie redr 消す
-				"xAxes" => [ [
-					"stacked" => ( $parameters['stacked']->getValue() ),
-				] ],
-				"yAxes" => [ [
-					"ticks" => [
-                        "reverse"=>$parameters['reverse']->getValue(),
-						"beginAtZero" => true
-					],
-					"stacked" => ( $parameters['stacked']->getValue() )
-				] ]
+				'x' => [
+					'stacked' => $stacked,
+				],
+				'y' => [
+					'stacked' => $stacked,
+					'reverse' => $reverse,
+					'beginAtZero' => true,
+				],
 			];
 		}
 
+		$charttitle = $parameters['charttitle']->getValue();
+
+		// Chart.js v4 JSON構造
+		// v2: options.legend / options.title → v4: options.plugins.legend / options.plugins.title
+		$chart_options_plugins = [
+			'legend' => [
+				'position' => $parameters['position']->getValue(),
+			],
+		];
+		if ( $charttitle !== '' ) {
+			$chart_options_plugins['title'] = [
+				'display' => true,
+				'text' => $charttitle,
+			];
+		}
+
+		$chart_options = [
+			'responsive' => true,
+			'maintainAspectRatio' => true,
+			'plugins' => $chart_options_plugins,
+			'scales' => $chart_options_scales,
+		];
+
+		if ( $isHorizontalBar ) {
+			$chart_options['indexAxis'] = 'y';
+		}
+
 		$chart_json = [
-			"type" => $parameters['type']->getValue(),
-			"data" => [
-				"labels" => $chart_labels,
-				"datasets" => $chart_datasets,
+			'type' => $chartType,
+			'data' => [
+				'labels' => $chart_labels,
+				'datasets' => $chart_datasets,
 			],
-			"options" => [
-			    "title"=>[
-                    "display" =>($parameters['charttitle']->getValue()?true:false),
-                    "text" =>$parameters['charttitle']->getValue()
-                ],
-				"scales" => $chart_options_scales,
-				"legend" => [
-					"position" => $parameters['position']->getValue(),
-					],
-				"plugins" => [
-					"colorschemes" => [
-						"scheme" => $parameters['theme']->getValue()
-					]
-				]
-			],
-			"maintainAspectRatio" => true
+			'options' => $chart_options,
 		];
 
 		// リソースローダに追加
@@ -326,13 +337,13 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @return string
 	 */
 	private function createHtml(): string {
-		return Html::rawelement(
+		return Html::rawElement(
 			'div',
 			[
 				'class' => 'chart_js_wrap',
 				'style' => 'max-width:' . $this->parameters['width']->getValue() . ';',
 			],
-			Html::rawelement( 'div',
+			Html::rawElement( 'div',
 				[
 					'id' => $this->id,
 					'class' => 'chart_js_container',
@@ -358,7 +369,7 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @param string $txt
 	 * @return string
 	 */
-	private function characterLimit( $txt ):string {
+	private function characterLimit( $txt ): string {
 		return mb_substr( $txt, 0, $this->parameters['character_limit']->getValue() );
 	}
 
@@ -368,7 +379,7 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @param \SMW\DIWikiPage[] $result
 	 * @return array
 	 */
-	private function getSubjects( $result ):array {
+	private function getSubjects( $result ): array {
 		$subjects = [];
 
 		/**
@@ -385,7 +396,7 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @param PrintRequest[] $result
 	 * @return array
 	 */
-	private function getLabels( $result ):array {
+	private function getLabels( $result ): array {
 		$printRequestsLabels = [];
 		/**
 		 * @var PrintRequest[]
@@ -393,7 +404,6 @@ class ChartJsPrinter implements ResultPrinter {
 		 */
 		foreach ( $result as $printRequests ) {
 			if ( strlen( $printRequests->getLabel() ) ) {
-				// $printRequestsLabels[]=$printRequests->getLabel();
 				$printRequestsLabels[$printRequests->getCanonicalLabel()] = [
 					'label' => $printRequests->getLabel(),
 					'type' => $printRequests->getTypeID()
