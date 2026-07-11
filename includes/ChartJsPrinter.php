@@ -4,27 +4,23 @@ namespace ChartJs;
 
 use Html;
 use ParamProcessor\ParameterTypes;
-use ParamProcessor\ProcessedParam;
-use SMW\Parser\RecursiveTextProcessor;
 use SMW\Query\PrintRequest;
 use SMW\Query\QueryResult;
-use SMW\Query\ResultPrinter;
+use SMW\Query\ResultPrinters\ResultPrinter;
 use SMWDataItem;
 use SMWDataValue;
 use SMWOutputs;
-use SMWQuery;
 use SMWResultArray;
 
-class ChartJsPrinter implements ResultPrinter {
+class ChartJsPrinter extends ResultPrinter {
 
 	/**
 	 * @var $id string
-	 * @var $parameters ProcessedParam[]
 	 */
 	private $id;
-	private $parameters;
 
-	public function __construct() {
+	public function __construct( $format, $inline = true ) {
+		parent::__construct( $format, $inline );
 		$this->id = $this->newChartJsId();
 	}
 
@@ -43,7 +39,7 @@ class ChartJsPrinter implements ResultPrinter {
 	 *
 	 * @see ResultPrinter::getParamDefinitions
 	 */
-	public function getParamDefinitions( array $definitions ) {
+	public function getParamDefinitions( array $definitions ): array {
 
 		$definitions['width'] = [
 			'type' => ParameterTypes::DIMENSION,
@@ -111,13 +107,11 @@ class ChartJsPrinter implements ResultPrinter {
 
 	/**
 	 * @param QueryResult $result
-	 * @param ProcessedParam[] $parameters
 	 * @param int $outputMode
 	 *
 	 * @return string
 	 */
-	public function getResult( QueryResult $result, array $parameters, $outputMode ): string {
-		$this->parameters = $parameters;
+	protected function getResultText( QueryResult $result, $outputMode ): string {
 		$chart_data = [];
 
 		/**
@@ -130,7 +124,7 @@ class ChartJsPrinter implements ResultPrinter {
 		$labels = $this->getLabels( $result->getPrintRequests() );
 		// $labels = array_column( $raw_labels, "label" );
 
-		$group = $parameters['group']->getValue();
+		$group = $this->params['group'];
 		$row_propertyLabel = [];
 		$row = [];
 		/**
@@ -253,40 +247,40 @@ class ChartJsPrinter implements ResultPrinter {
 
 		// オプション
 		$chart_options_scales = [];
-		if ( in_array( $parameters['type']->getValue(), [ 'line','bar','horizontalBar' ,'polarArea'], true ) ) {
+		if ( in_array( $this->params['type'], [ 'line','bar','horizontalBar' ,'polarArea'], true ) ) {
 			$chart_options_scales = [
 				// pie redr 消す
 				"xAxes" => [ [
-					"stacked" => ( $parameters['stacked']->getValue() ),
+					"stacked" => ( $this->params['stacked'] ),
 				] ],
 				"yAxes" => [ [
 					"ticks" => [
-                        "reverse"=>$parameters['reverse']->getValue(),
+                        "reverse"=>$this->params['reverse'],
 						"beginAtZero" => true
 					],
-					"stacked" => ( $parameters['stacked']->getValue() )
+					"stacked" => ( $this->params['stacked'] )
 				] ]
 			];
 		}
 
 		$chart_json = [
-			"type" => $parameters['type']->getValue(),
+			"type" => $this->params['type'],
 			"data" => [
 				"labels" => $chart_labels,
 				"datasets" => $chart_datasets,
 			],
 			"options" => [
 			    "title"=>[
-                    "display" =>($parameters['charttitle']->getValue()?true:false),
-                    "text" =>$parameters['charttitle']->getValue()
+                    "display" =>($this->params['charttitle']?true:false),
+                    "text" =>$this->params['charttitle']
                 ],
 				"scales" => $chart_options_scales,
 				"legend" => [
-					"position" => $parameters['position']->getValue(),
+					"position" => $this->params['position'],
 					],
 				"plugins" => [
 					"colorschemes" => [
-						"scheme" => $parameters['theme']->getValue()
+						"scheme" => $this->params['theme']
 					]
 				]
 			],
@@ -330,7 +324,7 @@ class ChartJsPrinter implements ResultPrinter {
 			'div',
 			[
 				'class' => 'chart_js_wrap',
-				'style' => 'max-width:' . $this->parameters['width']->getValue() . ';',
+				'style' => 'max-width:' . $this->params['width'] . ';',
 			],
 			Html::rawelement( 'div',
 				[
@@ -359,7 +353,7 @@ class ChartJsPrinter implements ResultPrinter {
 	 * @return string
 	 */
 	private function characterLimit( $txt ):string {
-		return mb_substr( $txt, 0, $this->parameters['character_limit']->getValue() );
+		return mb_substr( $txt, 0, $this->params['character_limit'] );
 	}
 
 	/**
@@ -401,61 +395,6 @@ class ChartJsPrinter implements ResultPrinter {
 			}
 		}
 		return $printRequestsLabels;
-	}
-
-
-	/**
-	 * query mode
-	 * @param \SMW\Query\QueryContext $context
-	 *
-	 * @return int
-	 */
-	public function getQueryMode( $context ): int {
-		return SMWQuery::MODE_INSTANCES;
-	}
-
-	/**
-	 * Set whether errors should be shown. By default they are.
-	 *
-	 * @param bool $show
-	 */
-	public function setShowErrors( $show ) {
-	}
-
-	/**
-	 * Returns if the format is an export format.
-	 *
-	 * @return bool
-	 */
-	public function isExportFormat(): bool {
-		return false;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDefaultSort(): string {
-		return 'ASC';
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isDeferrable(): bool {
-		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function supportsRecursiveAnnotation(): bool {
-		return false;
-	}
-
-	/**
-	 * @param RecursiveTextProcessor $recursiveTextProcessor
-	 */
-	public function setRecursiveTextProcessor( RecursiveTextProcessor $recursiveTextProcessor ) {
 	}
 
 }
